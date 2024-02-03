@@ -4,6 +4,7 @@
 #include <GL/freeglut.h> //include glut for Windows
 #endif
 
+// Test Program to check if everything is installed properly
 
 // the window's width and height
 int width, height;
