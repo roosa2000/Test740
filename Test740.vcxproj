@@ -151,7 +151,35 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Assignment2.cpp" />
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="ShaderClass.cpp" />
+    <ClCompile Include="ShaderProgram.cpp" />
+    <ClCompile Include="Text.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Assignment2.h" />
+    <ClInclude Include="Camera.h" />
+    <ClInclude Include="main.h" />
+    <ClInclude Include="Mesh.h" />
+    <ClInclude Include="ShaderClass.h" />
+    <ClInclude Include="ShaderProgram.h" />
+    <ClInclude Include="Text.h" />
+    <ClInclude Include="TransformSimple.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\Downloads\vert_frag_example\shaders\basic.frag" />
+    <None Include="..\..\..\Downloads\vert_frag_example\shaders\basic.vert" />
+    <None Include="..\..\..\Downloads\vert_frag_example\shaders\displacement.frag" />
+    <None Include="..\..\..\Downloads\vert_frag_example\shaders\displacement.vert" />
+    <None Include="..\..\..\Downloads\vert_frag_example\shaders\perFrag_lambert.frag" />
+    <None Include="..\..\..\Downloads\vert_frag_example\shaders\perFrag_lambert.vert" />
+    <None Include="..\..\..\Downloads\vert_frag_example\shaders\perVert_lambert.frag" />
+    <None Include="..\..\..\Downloads\vert_frag_example\shaders\perVert_lambert.vert" />
+    <None Include="..\..\..\Downloads\vert_frag_example\shaders\toon_shading.frag" />
+    <None Include="..\..\..\Downloads\vert_frag_example\shaders\toon_shading.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

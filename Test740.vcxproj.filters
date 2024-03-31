@@ -13,10 +13,92 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Mesh">
+      <UniqueIdentifier>{0c2ab092-41d6-49b3-b283-66780efc8ce3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="shaders">
+      <UniqueIdentifier>{0ee5bc6f-2f72-4b58-999d-e0c90a40067b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Assignment2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderClass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderProgram.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Text.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Assignment2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TransformSimple.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="main.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderClass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderProgram.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Text.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\Downloads\vert_frag_example\shaders\perVert_lambert.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\..\..\Downloads\vert_frag_example\shaders\perVert_lambert.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\..\..\Downloads\vert_frag_example\shaders\toon_shading.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\..\..\Downloads\vert_frag_example\shaders\toon_shading.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\..\..\Downloads\vert_frag_example\shaders\basic.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\..\..\Downloads\vert_frag_example\shaders\basic.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\..\..\Downloads\vert_frag_example\shaders\displacement.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\..\..\Downloads\vert_frag_example\shaders\displacement.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\..\..\Downloads\vert_frag_example\shaders\perFrag_lambert.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\..\..\Downloads\vert_frag_example\shaders\perFrag_lambert.vert">
+      <Filter>shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

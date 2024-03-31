@@ -1,125 +1,210 @@
+// This OpenGL project demonstrates a simple interactive camera implementation and a few vertex and fragment shaders. 
+// Two modes of camera controls (press c to switch between two modes): 
+// 1. Focus Mode: Holding ALT and Left Mouse Button (LMB) and moving the mouse will rotate the camera about the LookAt Position
+//                Holding ALT and MMB and moving the mouse will pan the camera.
+//                Holding ALT and RMB and moving the mouse will zoom the camera.
+// 2. First-Person Mode: Pressing W, A, S, or D will move the camera
+//                       Holding LMB and moving the mouse will roate the camera.
+// Basic shader - demonstrate the basic use of vertex and fragment shader
+// Displacement shader - a special fireball visual effects with Perlin noise function
+// Toon shading shader - catoonish rendering effects
+// Per-vertex shading v.s. per-fragment shading = visual comparison between two types of shading 
+
+#include <GL/glew.h>
 #ifdef __APPLE__
-#include <GLUT/glut.h> // include glut for Mac
+#include <GLUT/glut.h>
 #else
-#include <GL/freeglut.h> //include glut for Windows
+#include <GL/freeglut.h>
 #endif
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/constants.hpp>
+#include <glm/gtx/string_cast.hpp>
 
-// Test Program to check if everything is installed properly
+#include "Camera.h"
+#include "Text.h"
+#include "Mesh.h"
 
-// the window's width and height
-int width, height;
+#include <iostream>
+using namespace std;
+using namespace glm;
 
-// the three vertices of a triangle
-float v0[2];
-float v1[2];
-float v2[2];
+int g_winWidth = 1024;
+int g_winHeight = 512;
 
+Camera g_cam;
+Text g_text;
 
-void createTriangle()
+unsigned char g_keyStates[256];
+
+char v_shader_file[] =
+//".\\shaders\\basic.vert";
+//".\\shaders\\displacement.vert"; // vertex displacement shader with perlin noise
+//".\\shaders\\perVert_lambert.vert"; // basic lambert lighting  
+".\\shaders\\perFrag_lambert.vert"; // basic lambert lighting with per-fragment implementation
+// ".\\shaders\\toon_shading.vert"; // basic toon shading with per-fragment implementation
+
+char f_shader_file[] =
+//".\\shaders\\basic.frag";
+// ".\\shaders\\displacement.frag"; // vertex displacement shader with perlin noise
+// ".\\shaders\\perVert_lambert.frag"; // basic lambert shading 
+".\\shaders\\perFrag_lambert.frag"; // basic lambert shading with per-fragment implementation
+// ".\\shaders\\toon_shading.frag"; // basic toon shading with per-fragment implementation
+
+const char meshFile[128] =
+//"Mesh/sphere.obj";
+//"Mesh/bunny2K.obj";
+"Mesh/teapot.obj";
+//"Mesh/teddy.obj";
+
+Mesh g_mesh;
+
+vec3 g_lightPos = vec3(3, 3, 3);
+float g_time = 0.0f;
+
+void initialization()
 {
-    // initialize the triangle's vertices
-    v0[0] = 0.0f;
-    v0[1] = 0.0f;
-    v1[0] = 5.0f;
-    v1[1] = 0.0f;
-    v2[0] = 2.5f;
-    v2[1] = 3.0f;
+	g_cam.set(1.0f, 2.0f, 4.0f, 0.0f, 1.0f, -0.5f, g_winWidth, g_winHeight);
+	g_text.setColor(0.0f, 0.0f, 0.0f);
+
+	g_mesh.create(meshFile, v_shader_file, f_shader_file);
+	// add any stuff you want to initialize ...
 }
 
-void init(void)
+/****** GL callbacks ******/
+void initialGL()
 {
-    // initialize the size of the window
-    width = 600;
-    height = 600;
-    createTriangle();
+	glDisable(GL_LIGHTING);
+	glEnable(GL_DEPTH_TEST);
+
+	glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
+
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
 }
 
-// called when the GL context need to be rendered
-void display(void)
+void idle()
 {
-    // clear the screen to white, which is the background color
-    glClearColor(1.0, 1.0, 1.0, 0.0);
+	// add any stuff to update at runtime ....
 
-    // clear the buffer stored for drawing
-    glClear(GL_COLOR_BUFFER_BIT);
+	g_cam.keyOperation(g_keyStates, g_winWidth, g_winHeight);
 
-
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-
-    // specify the color for drawing
-    glColor3f(1.0, 0.0, 0.0);
-
-    // this is immedidate mode of OpenGL usded prior to OpenGL 3.0
-    glBegin(GL_TRIANGLES);
-    glVertex2fv(v0);
-    glVertex2fv(v1);
-    glVertex2fv(v2);
-    glEnd();
-
-    // specify the color for new drawing
-    glColor3f(0.0, 0.0, 1.0);
-
-    // draw the origin of the canvas
-    glPointSize(30.0f);
-    glBegin(GL_POINTS);
-    glVertex2f(0.0f, 0.0f);
-    glEnd();
-    glPointSize(1.0f);
-
-    glutSwapBuffers();
+	glutPostRedisplay();
 }
 
-// called when window is first created or when window is resized
+void display()
+{
+	glClearColor(1.0, 1.0, 1.0, 0.0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	// add any stuff you'd like to draw	
+
+	glUseProgram(0);
+	glDisable(GL_LIGHTING);
+	glEnable(GL_DEPTH_TEST);
+
+	g_cam.drawGrid();
+	g_cam.drawCoordinateOnScreen(g_winWidth, g_winHeight);
+	g_cam.drawCoordinate();
+
+	// display the text
+	string str;
+	if (g_cam.isFocusMode()) {
+		str = "Cam mode: Focus";
+		g_text.draw(10, 30, const_cast<char*>(str.c_str()), g_winWidth, g_winHeight);
+	}
+	else if (g_cam.isFPMode()) {
+		str = "Cam mode: FP";
+		g_text.draw(10, 30, const_cast<char*>(str.c_str()), g_winWidth, g_winHeight);
+	}
+	str = "vertex count: " + std::to_string(g_mesh.vert_num);
+	g_text.draw(10, 45, const_cast<char*>(str.c_str()), g_winWidth, g_winHeight);
+	str = "triangle count: " + std::to_string(g_mesh.tri_num);
+	g_text.draw(10, 60, const_cast<char*>(str.c_str()), g_winWidth, g_winHeight);
+
+
+	g_time = (float)glutGet(GLUT_ELAPSED_TIME) / 1000.0f;
+	g_mesh.draw(g_cam.viewMat, g_cam.projMat, g_lightPos, g_time);
+
+	glutSwapBuffers();
+}
+
 void reshape(int w, int h)
 {
-    // update thescreen dimensions
-    width = w;
-    height = h;
-
-    //do an orthographic parallel projection, limited by screen/window size
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    gluOrtho2D(0.0, 10.0, 0.0, 10.0);
-    //gluOrtho2D(-5.0, 5.0, -5.0, 5.0);
-
-    /* tell OpenGL to use the whole window for drawing */
-    glViewport(0, 0, (GLsizei)width, (GLsizei)height);
-    //glViewport((GLsizei) width/2, (GLsizei) height/2, (GLsizei) width, (GLsizei) height);
-
-    glutPostRedisplay();
+	g_winWidth = w;
+	g_winHeight = h;
+	if (h == 0) {
+		h = 1;
+	}
+	g_cam.setProjectionMatrix(g_winWidth, g_winHeight);
+	g_cam.setViewMatrix();
+	glViewport(0, 0, w, h);
 }
 
-int main(int argc, char* argv[])
+void mouse(int button, int state, int x, int y)
 {
-    // before create a glut window,
-    // initialize stuff not opengl/glut dependent
-    init();
+	g_cam.mouseClick(button, state, x, y, g_winWidth, g_winHeight);
+}
 
-    //initialize GLUT, let it extract command-line GLUT options that you may provide
-    //NOTE that the '&' before argc
-    glutInit(&argc, argv);
+void motion(int x, int y)
+{
+	g_cam.mouseMotion(x, y, g_winWidth, g_winHeight);
+}
 
-    // specify as double bufferred can make the display faster
-    // Color is speicfied to RGBA, four color channels with Red, Green, Blue and Alpha(depth)
-    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
+void keyup(unsigned char key, int x, int y)
+{
+	g_keyStates[key] = false;
+}
 
-    //set the initial window size */
-    glutInitWindowSize((int)width, (int)height);
+void keyboard(unsigned char key, int x, int y)
+{
+	g_keyStates[key] = true;
+	switch (key) {
+	case 27:
+		exit(0);
+		break;
+	case 'c': // switch cam control mode
+		g_cam.switchCamMode();
+		glutPostRedisplay();
+		break;
+	case ' ':
+		g_cam.PrintProperty();
+		break;
+	case '+':
+		g_mesh.normal_offset += 0.01;
+		break;
+	case'-':
+		g_mesh.normal_offset -= 0.01;
+	}
+}
 
-    // create the window with a title
-    glutCreateWindow("First OpenGL Program");
+int main(int argc, char** argv)
+{
+	
+	glutInit(&argc, argv);
+	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGB);
+	glutInitWindowSize(g_winWidth, g_winHeight);
+	glutInitWindowPosition(0, 0);
+	glutCreateWindow("VertFrag Shader Example");
 
-    /* --- register callbacks with GLUT --- */
+	glewInit();
+	initialGL();
 
-    //register function to handle window resizes
-    glutReshapeFunc(reshape);
+	glutDisplayFunc(display);
+	glutReshapeFunc(reshape);
+	glutMouseFunc(mouse);
+	glutMotionFunc(motion);
+	glutKeyboardUpFunc(keyup);
+	glutKeyboardFunc(keyboard);
+	glutIdleFunc(idle);
 
-    //register function that draws in the window
-    glutDisplayFunc(display);
+	initialization();
 
-    //start the glut main loop
-    glutMainLoop();
-
-    return 0;
+	glutMainLoop();
+	//glGetString(GL_VERSION);
+	return EXIT_SUCCESS;
 }
